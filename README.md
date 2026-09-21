@@ -17,8 +17,8 @@ In this repository's **Settings > Secrets and variables > Actions**, create repo
 
 | Name | Value |
 | --- | --- |
-| `ZCOM_SSH_PRIVATE_KEY` | Complete contents of the downloaded `good-fruit-deploy` private key, including header and footer. |
-| `ZCOM_SSH_PASSPHRASE` | The passphrase used successfully for interactive SSH login. |
+| `SSH_PRIVATE_KEY` | Complete contents of the downloaded `good-fruit-deploy` private key, including header and footer. |
+| `SSH_PASSPHRASE` | The passphrase used successfully for interactive SSH login. |
 | `ZCOM_KNOWN_HOSTS` | The previously trusted host-key line for `[18.136.157.239]:9022` from the local OpenSSH `known_hosts` file. |
 
 Secrets from `a-joyful-life` are not automatically available in this repository. Do not commit private keys, passphrases, WordPress configuration, or database exports.

@@ -13,13 +13,13 @@ jobs:
     steps:
       - name: Authenticate and verify Good Fruit WordPress
         env:
-          SSH_KEY: ${{ secrets.ZCOM_SSH_PRIVATE_KEY }}
-          SSH_PASSPHRASE: ${{ secrets.ZCOM_SSH_PASSPHRASE }}
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
           KNOWN_HOSTS: ${{ secrets.ZCOM_KNOWN_HOSTS }}
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$SSH_KEY" || { echo '::error::Missing ZCOM_SSH_PRIVATE_KEY'; exit 1; }
+          test -n "$SSH_KEY" || { echo '::error::Missing SSH_PRIVATE_KEY'; exit 1; }
           test -n "$KNOWN_HOSTS" || { echo '::error::Missing ZCOM_KNOWN_HOSTS'; exit 1; }
           umask 077
           key_dir=$(mktemp -d "$RUNNER_TEMP/good-fruit-ssh.XXXXXX")
