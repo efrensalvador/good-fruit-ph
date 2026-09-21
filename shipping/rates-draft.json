@@ -3,7 +3,7 @@
   "currency": "PHP",
   "weight_unit": "kg",
   "product_1825_shipping_weight": 0.01,
-  "packaging_weight_per_order": null,
+  "packaging_weight_per_order": 0.3,
   "minimum_product_1825_quantity": 3,
   "free_shipping": false,
   "above_maximum_policy": null,
