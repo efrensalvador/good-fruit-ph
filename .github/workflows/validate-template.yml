@@ -15,4 +15,5 @@ jobs:
           set -euo pipefail
           find wp-content/plugins/gfe-industrial .github/scripts -name '*.php' -print0 | xargs -0 -n1 php -l
           bash -n .github/scripts/deploy-product.sh
+          bash -n .github/scripts/remove-local-pickup.sh
           php tests/minimum-quantity.php

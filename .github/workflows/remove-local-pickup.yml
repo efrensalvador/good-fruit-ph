@@ -1,0 +1,51 @@
+name: Remove local pickup shipping
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gfe-shipping-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7, Node.js 24
+      - name: Validate script syntax
+        run: |
+          set -euo pipefail
+          php -l .github/scripts/remove-local-pickup.php
+          bash -n .github/scripts/remove-local-pickup.sh
+      - name: Remove local pickup shipping method
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
+          KNOWN_HOSTS: ${{ secrets.ZCOM_KNOWN_HOSTS }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$SSH_KEY" || { echo '::error::Missing SSH_PRIVATE_KEY'; exit 1; }
+          test -n "$KNOWN_HOSTS" || { echo '::error::Missing ZCOM_KNOWN_HOSTS'; exit 1; }
+          umask 077
+          key_dir=$(mktemp -d "$RUNNER_TEMP/good-fruit-ssh.XXXXXX")
+          trap 'ssh-agent -k >/dev/null 2>&1 || true; rm -rf -- "$key_dir"' EXIT
+          printf '%s\n' "$SSH_KEY" | tr -d '\r' > "$key_dir/key"
+          printf '%s\n' "$KNOWN_HOSTS" | tr -d '\r' > "$key_dir/known_hosts"
+          printf '#!/bin/sh\nprintf "%%s\\n" "$SSH_PASSPHRASE"\n' > "$key_dir/askpass"
+          chmod 700 "$key_dir/askpass"
+          eval "$(ssh-agent -s)"
+          DISPLAY=:0 SSH_ASKPASS_REQUIRE=force SSH_ASKPASS="$key_dir/askpass" ssh-add "$key_dir/key" </dev/null
+          scp -P 9022 -i "$key_dir/key" -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$key_dir/known_hosts" .github/scripts/remove-local-pickup.php negwrhnd@18.136.157.239:remove-local-pickup.php
+          ssh -p 9022 -i "$key_dir/key" -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$key_dir/known_hosts" negwrhnd@18.136.157.239 'bash -s' < .github/scripts/remove-local-pickup.sh
+      - name: Verify live checkout no longer offers local pickup
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 'https://goodfruitph.com/cart/' -o live-cart.html
+          if grep -qi 'local pickup\|Pickup (Good Fruit Enterprise)' live-cart.html; then
+            echo '::warning::Cart page still mentions pickup text; verify manually (may be unrelated copy).'
+          fi

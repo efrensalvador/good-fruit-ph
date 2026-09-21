@@ -46,3 +46,9 @@ The `gfe-industrial` plugin supplies a responsive template only for product **18
 The workflow backs up existing plugin files and the changed product fields under `~/gfe-product-backups/<timestamp>`. It uploads only this custom plugin. It does not synchronize `public_html`, change the product slug, or touch sibling sites. PHP and shell syntax checks run on push and before deployment.
 
 For a layout rollback, deactivate `gfe-industrial` in WordPress and purge LiteSpeed cache. This restores the prior theme/Elementor product template. Price, featured image, and inventory changes persist: restore those from `product-before.json` in the backup folder if needed. For later plugin updates, restore the backed-up plugin folder as well.
+
+## Local pickup removal
+
+**Actions > Remove local pickup shipping > Run workflow** removes the "Pickup (Good Fruit Enterprise)" option from cart and checkout. It deletes any `local_pickup` shipping method instance from every WooCommerce shipping zone (including the default zone), and disables WooCommerce's core Local Pickup checkout feature if it is turned on. It verifies the site URL before changing anything.
+
+The workflow backs up the full pre-change shipping zone/method configuration and the Local Pickup feature settings to `shipping-before.json` under `~/gfe-shipping-backups/<timestamp>` on the server. To restore pickup, re-add the method in WooCommerce > Settings > Shipping (or re-enable `woocommerce_pickup_location_settings`) using that backup as reference; the workflow does not re-create methods automatically.
