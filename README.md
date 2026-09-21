@@ -8,7 +8,8 @@ GitHub connection setup for https://goodfruitph.com on Z.com cPanel.
 - Port: `9022`
 - User: `negwrhnd`
 - Account home: `/home/negwrhnd`
-- WordPress document root: awaiting verification; do not infer it from the domain.
+- WordPress document root: `/home/negwrhnd/public_html`, confirmed by interactive SSH and `wp option get home` returning `https://goodfruitph.com`.
+- Other sites, including `ajoyfull.life`, live in subfolders. Deployment must target explicit Good Fruit theme/plugin paths, never synchronize or delete the entire `public_html` tree.
 
 ## GitHub Actions secrets
 
@@ -32,6 +33,6 @@ Copy the host-key record, not the comment line or a SHA256 fingerprint.
 
 ## Connection check
 
-Open **Actions > Check Z.com connection > Run workflow** after adding the secrets. This manual workflow authenticates, prints the account and home directory, and lists WordPress configuration file paths. It does not read configuration contents or modify the server.
+Open **Actions > Check Z.com connection > Run workflow** after adding the secrets. This manual workflow authenticates, verifies that WordPress in `/home/negwrhnd/public_html` reports exactly `https://goodfruitph.com`, and lists installed themes and plugins. It does not deploy files or intentionally modify the server.
 
-Deployment is not configured yet. First verify which WordPress installation serves `goodfruitph.com`, inspect the existing custom code, and define which theme/plugin files this repository will manage. Then add a scoped deployment with backups and verification.
+Deployment is not configured yet. Run the connection check, inspect the existing custom code, and define which theme/plugin files this repository will manage. Then add a scoped deployment with backups and verification.

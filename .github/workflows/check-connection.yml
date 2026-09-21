@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Authenticate and locate WordPress installations
+      - name: Authenticate and verify Good Fruit WordPress
         env:
           SSH_KEY: ${{ secrets.ZCOM_SSH_PRIVATE_KEY }}
           SSH_PASSPHRASE: ${{ secrets.ZCOM_SSH_PASSPHRASE }}
@@ -35,4 +35,4 @@ jobs:
             -o ConnectTimeout=15 -o StrictHostKeyChecking=yes \
             -o UserKnownHostsFile="$key_dir/known_hosts" \
             negwrhnd@18.136.157.239 \
-            'set -eu; printf "Connected as: "; whoami; printf "Home: "; pwd; find /home/negwrhnd/public_html -maxdepth 3 -name wp-config.php -print'
+            'set -eu; cd /home/negwrhnd/public_html; printf "Connected as: "; whoami; pwd; site_home=$(wp option get home --skip-plugins --skip-themes); test "$site_home" = "https://goodfruitph.com" || { echo "Unexpected WordPress home URL; stopping."; exit 1; }; printf "Verified WordPress home: %s\n" "$site_home"; wp theme list --fields=name,status,version --skip-plugins --skip-themes; wp plugin list --fields=name,status,version --skip-plugins --skip-themes'
