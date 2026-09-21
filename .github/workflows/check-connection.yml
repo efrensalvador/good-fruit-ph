@@ -1,0 +1,38 @@
+name: Check Z.com connection
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Authenticate and locate WordPress installations
+        env:
+          SSH_KEY: ${{ secrets.ZCOM_SSH_PRIVATE_KEY }}
+          SSH_PASSPHRASE: ${{ secrets.ZCOM_SSH_PASSPHRASE }}
+          KNOWN_HOSTS: ${{ secrets.ZCOM_KNOWN_HOSTS }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$SSH_KEY" || { echo '::error::Missing ZCOM_SSH_PRIVATE_KEY'; exit 1; }
+          test -n "$KNOWN_HOSTS" || { echo '::error::Missing ZCOM_KNOWN_HOSTS'; exit 1; }
+          umask 077
+          key_dir=$(mktemp -d "$RUNNER_TEMP/good-fruit-ssh.XXXXXX")
+          trap 'ssh-agent -k >/dev/null 2>&1 || true; rm -rf -- "$key_dir"' EXIT
+          printf '%s\n' "$SSH_KEY" | tr -d '\r' > "$key_dir/key"
+          printf '%s\n' "$KNOWN_HOSTS" | tr -d '\r' > "$key_dir/known_hosts"
+          printf '#!/bin/sh\nprintf "%%s\\n" "$SSH_PASSPHRASE"\n' > "$key_dir/askpass"
+          chmod 700 "$key_dir/askpass"
+          eval "$(ssh-agent -s)"
+          DISPLAY=:0 SSH_ASKPASS_REQUIRE=force SSH_ASKPASS="$key_dir/askpass" ssh-add "$key_dir/key" </dev/null
+          ssh -p 9022 -i "$key_dir/key" \
+            -o IdentitiesOnly=yes -o BatchMode=yes \
+            -o ConnectTimeout=15 -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$key_dir/known_hosts" \
+            negwrhnd@18.136.157.239 \
+            'set -eu; printf "Connected as: "; whoami; printf "Home: "; pwd; find /home/negwrhnd/public_html -maxdepth 3 -name wp-config.php -print'

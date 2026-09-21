@@ -1,0 +1,11 @@
+# Credentials and private site data must stay outside version control.
+.env
+.env.*
+*.pem
+*.key
+*.ppk
+good-fruit-deploy*
+wp-config.php
+*.sql
+*.sql.gz
+wp-content/uploads/
