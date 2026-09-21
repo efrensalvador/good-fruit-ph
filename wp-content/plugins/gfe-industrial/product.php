@@ -10,7 +10,7 @@ while (have_posts()) : the_post();
 ?>
 <main id="gfei-product" class="gfei">
   <div class="gfei-wrap">
-    <nav class="gfei-breadcrumb" aria-label="Breadcrumb"><a href="<?php echo esc_url(home_url('/')); ?>">Good Fruit Enterprise</a><span aria-hidden="true">/</span><span>3M VFlex 9105</span></nav>
+    <nav class="gfei-breadcrumb" aria-label="Breadcrumb"><a href="<?php echo esc_url(home_url('/shop/')); ?>">Shop</a><span aria-hidden="true">/</span><span aria-current="page">3M VFlex 9105</span></nav>
     <?php woocommerce_output_all_notices(); ?>
     <div class="gfei-grid">
       <section class="gfei-visual" aria-label="Product photograph">
