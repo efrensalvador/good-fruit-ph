@@ -21,6 +21,7 @@ jobs:
           set -euo pipefail
           find wp-content/plugins/gfe-industrial .github/scripts -name '*.php' -print0 | xargs -0 -n1 php -l
           bash -n .github/scripts/deploy-product.sh
+          php tests/minimum-quantity.php
           tar -czf gfe-industrial.tgz -C wp-content/plugins gfe-industrial -C ../../.github/scripts configure-product.php
       - name: Deploy product template
         env:

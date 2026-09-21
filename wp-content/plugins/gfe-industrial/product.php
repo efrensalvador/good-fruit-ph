@@ -21,9 +21,10 @@ while (have_posts()) : the_post();
       <section class="gfei-summary" aria-labelledby="gfei-title">
         <p class="gfei-eyebrow">GFE INDUSTRIAL · PERSONAL PROTECTIVE EQUIPMENT</p>
         <h1 id="gfei-title">3M™ VFlex™ 9105<span>N95 Particulate Respirator</span></h1>
-        <p class="gfei-intro">A disposable particulate respirator with a distinctive V-shaped pleated design. Available to order by the piece.</p>
+        <p class="gfei-intro">A disposable particulate respirator with a distinctive V-shaped pleated design. Priced per piece, with a minimum order of 3 pieces.</p>
         <div class="gfei-tags"><span>3M™ VFlex™</span><span>Model 9105</span><span>Sold individually</span></div>
         <div class="gfei-purchase">
+          <p>Minimum order: <strong>3 pieces</strong></p>
           <div class="gfei-price"><?php echo wp_kses_post($product->get_price_html()); ?><span>per piece</span></div>
           <?php woocommerce_template_single_add_to_cart(); ?>
           <a class="gfei-cart-link" href="<?php echo esc_url(wc_get_cart_url()); ?>">View cart →</a>

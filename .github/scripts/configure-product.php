@@ -22,6 +22,8 @@ $snapshot['stock_status'] = $product->get_stock_status();
 $snapshot['backorders'] = $product->get_backorders();
 $snapshot['initial_stock_marker'] = $product->get_meta('_gfei_initial_stock_500');
 $snapshot['stock_correction_150_marker'] = $product->get_meta('_gfei_stock_correction_150_v1');
+$snapshot['weight'] = $product->get_weight();
+$snapshot['sold_individually'] = $product->get_sold_individually();
 if (file_put_contents($backup_dir . '/product-before.json', wp_json_encode($snapshot, JSON_PRETTY_PRINT)) === false) { WP_CLI::error('Could not back up product settings.'); }
 $product->set_regular_price('70');
 $product->set_sale_price('');
@@ -29,6 +31,9 @@ $product->set_date_on_sale_from(null);
 $product->set_date_on_sale_to(null);
 $product->set_price('70');
 $product->set_image_id($image_id);
+// Convert 10 g into the store's configured unit without changing other products.
+$product->set_weight(wc_get_weight(0.01, get_option('woocommerce_weight_unit', 'kg'), 'kg'));
+$product->set_sold_individually(false);
 $initialize_stock = $product->get_meta('_gfei_stock_correction_150_v1') !== 'done';
 if ($initialize_stock) {
     $product->set_manage_stock(true);

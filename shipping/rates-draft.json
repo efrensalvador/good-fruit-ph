@@ -1,0 +1,17 @@
+{
+  "status": "awaiting_weight_and_boundary_confirmation",
+  "currency": "PHP",
+  "weight_unit": "kg",
+  "product_1825_shipping_weight": 0.01,
+  "packaging_weight_per_order": null,
+  "minimum_product_1825_quantity": 3,
+  "free_shipping": false,
+  "above_maximum_policy": null,
+  "source": "User-provided Honea shipping method tables",
+  "zones": {
+    "NCR": [[0, 0.5, 180], [0.5, 1, 220], [1, 2, 240], [2, 3, 330], [3, 4, 350], [4, 5, 395], [5, 6, 395]],
+    "Luzon": [[0, 0.5, 180], [0.5, 1, 250], [1, 2, 250], [2, 3, 330], [3, 4, 350], [4, 5, 395], [5, 6, 435]],
+    "Visayas": [[0, 0.5, 180], [0.5, 1, 250], [1, 2, 250], [2, 3, 330], [3, 4, 350], [4, 5, 395], [5, 6, 435]],
+    "Mindanao": [[0, 0.5, 80], [0.501, 1, 155], [1.001, 2, 180], [2.001, 3, 180], [3.001, 4, 270], [4.001, 5, 360], [5.001, 6, 435], [6.001, 7, 505], [7.001, 8, 575], [8.001, 9, 645], [9.001, 10, 715]]
+  }
+}

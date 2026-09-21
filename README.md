@@ -37,6 +37,8 @@ Open **Actions > Check Z.com connection > Run workflow** after adding the secret
 
 ## 3M 9105 product template
 
+Minimum order is **3 masks**, with quantities 4, 5, etc. allowed. Product, classic cart/checkout, and Store API quantity limits enforce this rule for product 1825. Deployment records the confirmed **10 g per piece**, converting into the existing store weight unit, and allows multiple pieces per order. Shipping rates use kilograms; reference tables in `shipping/` are not active checkout rates. Packaging weight and geographic coverage remain to be finalized.
+
 The `gfe-industrial` plugin supplies a responsive template only for product **1825**. It retains the theme header/footer, uses WooCommerce's native cart form, and uses the supplied `3M-N95-9105.webp` image. Other products continue using their existing templates. The product's current URL is preserved.
 
 **Actions > Deploy GFE product template > Run workflow** installs the plugin and sets the confirmed price to **PHP 70 per piece**, clears any sale price, and selects the supplied media-library image. Deployment verifies the site URL, currency, product type/name, and image before saving changes. The next deployment corrects inventory to the confirmed 150 pieces, enables product stock tracking, and disables backorders. A new correction marker applies this once even if the earlier 500-piece setup ran. Subsequent deployments preserve remaining stock after orders. WooCommerce global stock management must already be enabled; otherwise deployment stops before product changes. Shipping and payment readiness still require confirmation. Do not treat the template deployment as a completed checkout test.
