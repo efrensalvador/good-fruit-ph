@@ -1,0 +1,51 @@
+name: Deploy GFE product template
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gfe-product-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Validate and package
+        run: |
+          set -euo pipefail
+          find wp-content/plugins/gfe-industrial .github/scripts -name '*.php' -print0 | xargs -0 -n1 php -l
+          bash -n .github/scripts/deploy-product.sh
+          tar -czf gfe-industrial.tgz -C wp-content/plugins gfe-industrial -C ../../.github/scripts configure-product.php
+      - name: Deploy product template
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
+          KNOWN_HOSTS: ${{ secrets.ZCOM_KNOWN_HOSTS }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$SSH_KEY" || { echo '::error::Missing SSH_PRIVATE_KEY'; exit 1; }
+          test -n "$KNOWN_HOSTS" || { echo '::error::Missing ZCOM_KNOWN_HOSTS'; exit 1; }
+          umask 077
+          key_dir=$(mktemp -d "$RUNNER_TEMP/good-fruit-ssh.XXXXXX")
+          trap 'ssh-agent -k >/dev/null 2>&1 || true; rm -rf -- "$key_dir"' EXIT
+          printf '%s\n' "$SSH_KEY" | tr -d '\r' > "$key_dir/key"
+          printf '%s\n' "$KNOWN_HOSTS" | tr -d '\r' > "$key_dir/known_hosts"
+          printf '#!/bin/sh\nprintf "%%s\\n" "$SSH_PASSPHRASE"\n' > "$key_dir/askpass"
+          chmod 700 "$key_dir/askpass"
+          eval "$(ssh-agent -s)"
+          DISPLAY=:0 SSH_ASKPASS_REQUIRE=force SSH_ASKPASS="$key_dir/askpass" ssh-add "$key_dir/key" </dev/null
+          scp -P 9022 -i "$key_dir/key" -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$key_dir/known_hosts" gfe-industrial.tgz negwrhnd@18.136.157.239:gfe-industrial.tgz
+          ssh -p 9022 -i "$key_dir/key" -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$key_dir/known_hosts" negwrhnd@18.136.157.239 'bash -s' < .github/scripts/deploy-product.sh
+      - name: Verify live template
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 'https://goodfruitph.com/shop/face-mask-n95-https-goodfruitph-com-shop-face-mask-n95/' -o live-product.html
+          grep -q 'id="gfei-product"' live-product.html
+          grep -q '3M-N95-9105.webp' live-product.html

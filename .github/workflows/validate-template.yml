@@ -1,0 +1,17 @@
+name: Validate product template
+on:
+  push:
+    paths: ['wp-content/plugins/gfe-industrial/**', '.github/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Check PHP and shell syntax
+        run: |
+          set -euo pipefail
+          find wp-content/plugins/gfe-industrial .github/scripts -name '*.php' -print0 | xargs -0 -n1 php -l
+          bash -n .github/scripts/deploy-product.sh

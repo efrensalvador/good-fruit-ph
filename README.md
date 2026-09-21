@@ -35,4 +35,12 @@ Copy the host-key record, not the comment line or a SHA256 fingerprint.
 
 Open **Actions > Check Z.com connection > Run workflow** after adding the secrets. This manual workflow authenticates, verifies that WordPress in `/home/negwrhnd/public_html` reports exactly `https://goodfruitph.com`, and lists installed themes and plugins. It does not deploy files or intentionally modify the server.
 
-Deployment is not configured yet. Run the connection check, inspect the existing custom code, and define which theme/plugin files this repository will manage. Then add a scoped deployment with backups and verification.
+## 3M 9105 product template
+
+The `gfe-industrial` plugin supplies a responsive template only for product **1825**. It retains the theme header/footer, uses WooCommerce's native cart form, and uses the supplied `3M-N95-9105.webp` image. Other products continue using their existing templates. The product's current URL is preserved.
+
+**Actions > Deploy GFE product template > Run workflow** installs the plugin and sets the confirmed price to **PHP 70 per piece**, clears any sale price, and selects the supplied media-library image. Deployment verifies the site URL, currency, product type/name, and image before saving changes. Existing stock settings are preserved; available quantity, shipping and payment readiness still require confirmation. Do not treat the template deployment as a completed checkout test.
+
+The workflow backs up existing plugin files and the changed product fields under `~/gfe-product-backups/<timestamp>`. It uploads only this custom plugin. It does not synchronize `public_html`, change the product slug, or touch sibling sites. PHP and shell syntax checks run on push and before deployment.
+
+For a layout rollback, deactivate `gfe-industrial` in WordPress and purge LiteSpeed cache. This restores the prior theme/Elementor product template. Price and featured image changes persist: restore those from `product-before.json` in the backup folder if needed. For later plugin updates, restore the backed-up plugin folder as well.
